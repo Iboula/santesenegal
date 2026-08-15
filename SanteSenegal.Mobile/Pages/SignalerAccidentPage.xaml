@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SanteSenegal.Mobile.Pages.SignalerAccidentPage"
+             Title="🚨 Signaler un Accident"
+             BackgroundColor="#1a1a2e">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" VerticalOptions="Center">
+
+            <Label Text="SanteSenegal"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center" />
+
+            <Label Text="Signalez un accident en 1 clic"
+                   FontSize="16"
+                   TextColor="#a0a0a0"
+                   HorizontalOptions="Center" />
+
+            <!-- Bouton principal géant -->
+            <Button x:Name="BtnSignaler"
+                    Text="🚨 SIGNALER UN ACCIDENT"
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    BackgroundColor="#e63946"
+                    TextColor="White"
+                    CornerRadius="20"
+                    HeightRequest="120"
+                    Clicked="OnSignalerClicked"
+                    HorizontalOptions="Fill" />
+
+            <!-- Statut GPS -->
+            <Frame BackgroundColor="#16213e" CornerRadius="10" Padding="15">
+                <VerticalStackLayout Spacing="5">
+                    <Label x:Name="LblGpsStatus"
+                           Text="📡 Localisation en cours..."
+                           TextColor="#00d4ff"
+                           FontAttributes="Bold" />
+                    <Label x:Name="LblCoordinates"
+                           Text="Lat: ---, Lng: ---"
+                           TextColor="#a0a0a0"
+                           FontSize="12" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Détails optionnels -->
+            <Frame BackgroundColor="#16213e" CornerRadius="10" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Détails (optionnels)" TextColor="White" FontAttributes="Bold" />
+                    <Entry x:Name="EntryVictimes"
+                           Placeholder="Nombre de victimes estimé"
+                           Keyboard="Numeric"
+                           TextColor="White"
+                           PlaceholderColor="#666" />
+                    <Entry x:Name="EntryDescription"
+                           Placeholder="Description rapide (collision, incendie...)"
+                           TextColor="White"
+                           PlaceholderColor="#666" />
+                    <Entry x:Name="EntryTelephone"
+                           Placeholder="Votre téléphone"
+                           Keyboard="Telephone"
+                           TextColor="White"
+                           PlaceholderColor="#666" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Statut connexion -->
+            <Label x:Name="LblNetworkStatus"
+                   Text="🌐 Vérification du réseau..."
+                   TextColor="#ffd700"
+                   FontSize="12"
+                   HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,87 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">🏥 SanteSenegal</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Accueil
+            </NavLink>
+        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/dashboard">
+                        <span class="bi bi-speedometer2-nav-menu" aria-hidden="true"></span> Dashboard
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/triage">
+                <span class="bi bi-heart-pulse-nav-menu" aria-hidden="true"></span> Triage
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/structures">
+                <span class="bi bi-hospital-nav-menu" aria-hidden="true"></span> Structures
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/accident">
+                <span class="bi bi-exclamation-triangle-nav-menu" aria-hidden="true"></span> 🚨 Accident
+            </NavLink>
+        </div>
+
+        <AuthorizeView Roles="Admin,AgentSante,Medecin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/alertes-temps-reel">
+                        <span class="bi bi-broadcast-nav-menu" aria-hidden="true"></span> 🔴 Dispatch
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/visualisation-3d">
+                        <span class="bi bi-box-nav-menu" aria-hidden="true"></span> 🗺️ 3D
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/rendez-vous">
+                        <span class="bi bi-calendar-check-nav-menu" aria-hidden="true"></span> Rendez-vous
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/paiements">
+                        <span class="bi bi-credit-card-nav-menu" aria-hidden="true"></span> Paiements
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

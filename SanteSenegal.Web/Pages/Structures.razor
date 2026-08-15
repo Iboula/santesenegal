@@ -1,0 +1,41 @@
+@page "/structures"
+
+<h1>🏥 Structures de Santé</h1>
+
+<div class="filters">
+    <input type="text" class="form-control" placeholder="🔍 Rechercher..." @bind="_searchTerm" />
+    <select class="form-control" @bind="_typeFilter">
+        <option value="">Tous les types</option>
+        <option value="Hopital">Hôpital</option>
+        <option value="Clinique">Clinique</option>
+        <option value="CentreDeSante">Centre de santé</option>
+    </select>
+</div>
+
+<div class="structures-list">
+    @foreach (var s in _structures)
+    {
+        <div class="structure-card">
+            <h4>@s.Nom</h4>
+            <p class="type-badge">@s.Type</p>
+            <p>📍 @s.Adresse</p>
+            <p>📞 @s.Telephone</p>
+            <p class="horaires">🕐 @s.HorairesOuverture</p>
+            <a href="/structure/@s.Id" class="btn btn-sm btn-outline-primary">Voir détails</a>
+        </div>
+    }
+</div>
+
+@code {
+    private string _searchTerm = "";
+    private string _typeFilter = "";
+
+    private List<StructureViewModel> _structures = new()
+    {
+        new(1, "Hôpital Principal de Dakar", "Hopital", "Plateau, Dakar", "+221 33 839 19 19", "24h/24"),
+        new(2, "Clinique du Cap", "Clinique", "Les Mamelles", "+221 33 869 69 69", "24h/24"),
+        new(3, "Centre de Santé Mermoz", "CentreDeSante", "Mermoz, Dakar", "+221 33 820 12 34", "08h-20h")
+    };
+
+    public record StructureViewModel(int Id, string Nom, string Type, string Adresse, string Telephone, string HorairesOuverture);
+}

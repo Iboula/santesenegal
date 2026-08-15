@@ -1,0 +1,105 @@
+@page "/triage"
+@inject INavigSanteService NavigSanteService
+
+<h1>🩺 Triage Symptomatique</h1>
+<p>Décrivez vos symptômes et obtenez une orientation médicale immédiate.</p>
+
+<div class="triage-container">
+    @if (_result == null)
+    {
+        <div class="symptomes-grid">
+            @foreach (var symptome in _symptomes)
+            {
+                <button class="btn @(_selectionnes.Contains(symptome) ? "btn-danger" : "btn-outline-primary")"
+                        @onclick="() => ToggleSymptome(symptome)">
+                    @symptome
+                </button>
+            }
+        </div>
+
+        <div class="mt-4">
+            <label>Âge : <strong>@_age ans</strong></label>
+            <input type="range" class="form-range" min="0" max="120" @bind="_age" />
+        </div>
+
+        <button class="btn btn-success w-100 mt-4" @onclick="Evaluer" disabled="@(!_selectionnes.Any())">
+            🔍 Évaluer ma situation
+        </button>
+    }
+    else
+    {
+        <div class="resultat-card @(_result.NiveauGravite)">
+            <h3>@_result.Titre</h3>
+            <p>@_result.Message</p>
+            <p><strong>Recommandation :</strong> @_result.Orientation</p>
+
+            @if (_result.StructuresProches?.Any() == true)
+            {
+                <h4>Structures recommandées :</h4>
+                <ul>
+                    @foreach (var s in _result.StructuresProches)
+                    {
+                        <li>@s.Nom — @s.Adresse</li>
+                    }
+                </ul>
+            }
+
+            <button class="btn btn-secondary" @onclick="Recommencer">Recommencer</button>
+        </div>
+    }
+</div>
+
+@code {
+    private List<string> _symptomes = new()
+    {
+        "Fièvre", "Maux de tête", "Toux", "Difficulté à respirer",
+        "Douleur thoracique", "Vomissements", "Diarrhée",
+        "Éruption cutanée", "Fatigue", "Saignement"
+    };
+
+    private HashSet<string> _selectionnes = new();
+    private int _age = 30;
+    private TriageResult? _result;
+
+    private void ToggleSymptome(string symptome)
+    {
+        if (_selectionnes.Contains(symptome))
+            _selectionnes.Remove(symptome);
+        else
+            _selectionnes.Add(symptome);
+    }
+
+    private async Task Evaluer()
+    {
+        // Appel API triage
+        _result = new TriageResult
+        {
+            Titre = "Consultation recommandée",
+            Message = "Vos symptômes nécessitent une évaluation médicale dans les 24h.",
+            Orientation = "Centre de santé ou médecin généraliste",
+            NiveauGravite = "jaune",
+            StructuresProches = new List<StructureBasic>
+            {
+                new("Centre de Santé Mermoz", "Mermoz, Dakar"),
+                new("Hôpital Principal", "Plateau, Dakar")
+            }
+        };
+    }
+
+    private void Recommencer()
+    {
+        _result = null;
+        _selectionnes.Clear();
+    }
+
+    public class TriageResult
+    {
+        public string Titre { get; set; } = "";
+        public string Message { get; set; } = "";
+        public string Orientation { get; set; } = "";
+        public string NiveauGravite { get; set; } = "";
+        public List<StructureBasic>? StructuresProches { get; set; }
+    }
+
+    public record StructureBasic(string Nom, string Adresse);
+}

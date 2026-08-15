@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SanteSenegal.Mobile.Pages.AccidentsProchesPage"
+             Title="📍 Accidents Signalés"
+             BackgroundColor="#1a1a2e">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Padding="15" Spacing="10">
+            <Label Text="Accidents en attente de synchronisation"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   FontSize="16" />
+            <Button x:Name="BtnSync"
+                    Text="🔄 Synchroniser maintenant"
+                    BackgroundColor="#00d4ff"
+                    TextColor="#1a1a2e"
+                    CornerRadius="10"
+                    Clicked="OnSyncClicked"
+                    HorizontalOptions="Fill" />
+            <Label x:Name="LblSyncStatus"
+                   Text=""
+                   TextColor="#ffd700"
+                   FontSize="12"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Liste -->
+        <CollectionView Grid.Row="1" x:Name="AccidentsList"
+                        BackgroundColor="Transparent">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="#16213e"
+                           CornerRadius="10"
+                           Margin="10,5"
+                           Padding="15">
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="{Binding Id, StringFormat='ID: {0}'}"
+                                   TextColor="#00d4ff"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding Latitude, StringFormat='Lat: {0:F5}'}"
+                                   TextColor="#a0a0a0"
+                                   FontSize="12" />
+                            <Label Text="{Binding Longitude, StringFormat='Lng: {0:F5}'}"
+                                   TextColor="#a0a0a0"
+                                   FontSize="12" />
+                            <Label Text="{Binding NombreVictimes, StringFormat='👥 Victimes: {0}'}"
+                                   TextColor="White" />
+                            <Label Text="{Binding DateSignalement, StringFormat='📅 {0:HH:mm:ss dd/MM}'}"
+                                   TextColor="#666"
+                                   FontSize="11" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

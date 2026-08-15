@@ -1,0 +1,41 @@
+# Build outputs
+bin/
+obj/
+TestResults/
+artifacts/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.v3.ncrunchsolution.user
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+appsettings.Development.json
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Godot generated/import cache
+.godot/
+*.import
+
+# MAUI / Android generated outputs
+*.apk
+*.aab
+*.ipa

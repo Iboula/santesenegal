@@ -1,0 +1,152 @@
+@page "/alertes-temps-reel"
+@attribute [Authorize(Roles = "Admin,AgentSante,Medecin")]
+@implements IAsyncDisposable
+@inject IAlertesHubClient AlertesHub
+@inject IJSRuntime JS
+
+<h1>🚨 Centre de Dispatch — Alertes Temps Réel</h1>
+
+<div class="alertes-container">
+    <!-- Statut connexion -->
+    <div class="connection-status @(_isConnected ? "connected" : "disconnected")">
+        <span class="status-dot"></span>
+        @(_isConnected ? "Connecté au hub temps réel" : "Déconnecté — reconnexion...")
+    </div>
+
+    <!-- Liste des alertes -->
+    <div class="alertes-layout">
+        <div class="alertes-list">
+            <h3>📥 Flux d'alertes</h3>
+            @if (_accidents.Count == 0)
+            {
+                <p class="text-muted">Aucun accident signalé en temps réel.</p>
+            }
+            else
+            {
+                @foreach (var accident in _accidents.OrderByDescending(a => a.DateAccident))
+                {
+                    <div class="alerte-card @GetSeverityClass(accident)">
+                        <div class="alerte-header">
+                            <strong>ACC-@accident.Id:D6</strong>
+                            <span class="badge @GetStatutClass(accident.Statut)">@accident.Statut</span>
+                        </div>
+                        <div class="alerte-body">
+                            <p>📍 @accident.AdresseApproximative</p>
+                            <p>🛣️ @accident.Route — PK @accident.PointKilometrique</p>
+                            <p>👥 Victimes estimées : <strong>@accident.NombreVictimesEstime</strong></p>
+                            @if (accident.NombreBlessesGraves > 0)
+                            {
+                                <p>🩸 Blessés graves : @accident.NombreBlessesGraves</p>
+                            }
+                            @if (accident.NombreDeces > 0)
+                            {
+                                <p>☠️ Décès : @accident.NombreDeces</p>
+                            }
+                            @if (accident.RisqueIncendie)
+                            {
+                                <p class="text-danger">🔥 Risque incendie !</p>
+                            }
+                            @if (accident.RouteBloquee)
+                            {
+                                <p class="text-warning">🚧 Route bloquée</p>
+                            }
+                        </div>
+                        <div class="alerte-footer">
+                            <small>@accident.DateAccident.ToLocalTime().ToString("HH:mm:ss")</small>
+                            <button class="btn btn-sm btn-primary" @onclick="() => FocusAccident(accident)">Voir sur carte</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Panneau carte (placeholder pour Leaflet/OpenStreetMap) -->
+        <div class="alertes-map">
+            <h3>🗺️ Carte des incidents</h3>
+            <div class="map-placeholder">
+                @if (_selectedAccident != null)
+                {
+                    <div class="map-info">
+                        <h4>ACC-@_selectedAccident.Id:D6</h4>
+                        <p>Lat: @_selectedAccident.Latitude, Lng: @_selectedAccident.Longitude</p>
+                        <p>@_selectedAccident.Description</p>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Sélectionnez un accident pour voir les détails géographiques.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<AccidentRoute> _accidents = new();
+    private AccidentRoute? _selectedAccident;
+    private bool _isConnected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AlertesHub.NouvelAccident += OnNouvelAccident;
+        AlertesHub.PriseEnCharge += OnPriseEnCharge;
+        AlertesHub.MiseAJourRessources += OnMiseAJourRessources;
+
+        await AlertesHub.StartAsync();
+        _isConnected = AlertesHub.IsConnected;
+        StateHasChanged();
+    }
+
+    private void OnNouvelAccident(AccidentRoute accident)
+    {
+        _accidents.Insert(0, accident);
+        _ = JS.InvokeVoidAsync("alert", $"🚨 Nouvel accident signalé ! ACC-{accident.Id:D6}");
+        StateHasChanged();
+    }
+
+    private void OnPriseEnCharge(int accidentId, string nomHopital)
+    {
+        var acc = _accidents.FirstOrDefault(a => a.Id == accidentId);
+        if (acc != null)
+        {
+            acc.Statut = StatutAccident.PriseEnCharge;
+        }
+        _ = JS.InvokeVoidAsync("alert", $"✅ Accident {accidentId} pris en charge par {nomHopital}");
+        StateHasChanged();
+    }
+
+    private void OnMiseAJourRessources(int structureId, RessourceSanitaire ressources)
+    {
+        // TODO: mettre à jour l'affichage des ressources si besoin
+        StateHasChanged();
+    }
+
+    private void FocusAccident(AccidentRoute accident)
+    {
+        _selectedAccident = accident;
+    }
+
+    private string GetSeverityClass(AccidentRoute accident)
+    {
+        if (accident.NombreDeces > 0 || accident.RisqueIncendie) return "severity-critical";
+        if (accident.NombreBlessesGraves > 0) return "severity-high";
+        if (accident.NombreVictimesEstime >= 3) return "severity-medium";
+        return "severity-low";
+    }
+
+    private string GetStatutClass(StatutAccident statut) => statut switch
+    {
+        StatutAccident.Signale => "bg-warning",
+        StatutAccident.PriseEnCharge => "bg-info",
+        StatutAccident.Cloture => "bg-success",
+        _ => "bg-secondary"
+    };
+
+    public async ValueTask DisposeAsync()
+    {
+        AlertesHub.NouvelAccident -= OnNouvelAccident;
+        AlertesHub.PriseEnCharge -= OnPriseEnCharge;
+        AlertesHub.MiseAJourRessources -= OnMiseAJourRessources;
+        await AlertesHub.StopAsync();
+    }
+}

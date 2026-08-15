@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: santesenegal-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Jwt__Secret=${JWT_SECRET:?JWT_SECRET manquant}
+      - Jwt__Issuer=${JWT_ISSUER:-SanteSenegal}
+      - Jwt__Audience=${JWT_AUDIENCE:-SanteSenegalMobile}
+    volumes:
+      - sqlite-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/v1/swagger.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optionnel : PostgreSQL pour production
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: santesenegal-db
+  #   environment:
+  #     POSTGRES_DB: santesenegal
+  #     POSTGRES_USER: ${DB_USER:-sante}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD manquant}
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+volumes:
+  sqlite-data:
+  # postgres-data:

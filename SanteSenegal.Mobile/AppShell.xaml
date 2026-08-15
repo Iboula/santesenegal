@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SanteSenegal.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:SanteSenegal.Mobile"
+    xmlns:pages="clr-namespace:SanteSenegal.Mobile.Pages"
+    Title="SanteSenegal.Mobile"
+    Shell.TabBarIsVisible="True">
+
+    <TabBar>
+        <Tab Title="Accueil" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+        </Tab>
+        <Tab Title="🚨 Signaler" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate pages:SignalerAccidentPage}" Route="SignalerAccident" />
+        </Tab>
+        <Tab Title="📍 Accidents" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate pages:AccidentsProchesPage}" Route="AccidentsProches" />
+        </Tab>
+    </TabBar>
+
+</Shell>

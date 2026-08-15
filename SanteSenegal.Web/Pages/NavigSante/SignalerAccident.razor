@@ -1,0 +1,110 @@
+@page "/accident"
+@inject INavigSanteService NavigSanteService
+
+<h1>🚨 Signaler un Accident</h1>
+
+<div class="accident-form">
+    @if (!_envoye)
+    {
+        <div class="alert alert-warning">
+            <strong>Mode urgence</strong> — Ce signalement sera traité en priorité.
+        </div>
+
+        <EditForm Model="_model" OnValidSubmit="Envoyer">
+            <div class="form-group">
+                <label>Type d'accident</label>
+                <InputSelect @bind-Value="_model.Type" class="form-control">
+                    <option value="Route">Accident de la route</option>
+                    <option value="Domestique">Accident domestique</option>
+                    <option value="Travail">Accident du travail</option>
+                    <option value="Autre">Autre</option>
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre de victimes estimé</label>
+                <InputNumber @bind-Value="_model.NombreVictimes" class="form-control" min="1" />
+            </div>
+
+            <div class="form-group">
+                <label>Localisation (GPS auto)</label>
+                <button type="button" class="btn btn-outline-secondary" @onclick="GetLocalisation">
+                    📍 Ma position
+                </button>
+                @if (_model.Latitude != 0)
+                {
+                    <small class="d-block text-muted">Lat: @_model.Latitude, Lng: @_model.Longitude</small>
+                }
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <InputTextArea @bind-Value="_model.Description" class="form-control" rows="3"
+                    placeholder="Collision, incendie, blessés graves..." />
+            </div>
+
+            <div class="form-check">
+                <InputCheckbox @bind-Value="_model.RouteBloquee" class="form-check-input" />
+                <label class="form-check-label">Route bloquée</label>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 mt-3" disabled="@_loading">
+                @(_loading ? "Envoi..." : "🚨 SIGNALEZ L'ACCIDENT")
+            </button>
+        </EditForm>
+    }
+    else
+    {
+        <div class="alert alert-success">
+            <h3>✅ Signalement reçu !</h3>
+            <p>Un équipage d'urgence a été alerté. Numéro de suivi : <strong>@_numeroSuivi</strong></p>
+            <p>Restez sur place si c'est sans danger.</p>
+        </div>
+
+        <h4>Hôpitaux avec réanimation disponible :</h4>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between">
+                <span>Hôpital Principal de Dakar</span>
+                <span class="badge bg-success">5 lits réa</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <span>Clinique du Cap</span>
+                <span class="badge bg-warning">2 lits réa</span>
+            </li>
+        </ul>
+    }
+</div>
+
+@code {
+    private AccidentModel _model = new();
+    private bool _loading;
+    private bool _envoye;
+    private string _numeroSuivi = "";
+
+    private async Task GetLocalisation()
+    {
+        // TODO: Appel JS geolocation
+        _model.Latitude = 14.7167;
+        _model.Longitude = -17.4677;
+    }
+
+    private async Task Envoyer()
+    {
+        _loading = true;
+        // Appel API
+        await Task.Delay(1000); // Simulation
+        _numeroSuivi = $"ACC-{DateTime.Now:yyyyMMdd-HHmmss}";
+        _envoye = true;
+        _loading = false;
+    }
+
+    public class AccidentModel
+    {
+        public string Type { get; set; } = "Route";
+        public int NombreVictimes { get; set; } = 1;
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public string? Description { get; set; }
+        public bool RouteBloquee { get; set; }
+    }
+}

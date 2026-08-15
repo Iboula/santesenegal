@@ -1,0 +1,46 @@
+@page "/dashboard"
+@attribute [Authorize]
+
+<h1>🏥 Tableau de Bord SanteSenegal</h1>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>🩺 Triage Symptomatique</h3>
+        <p>Évaluez vos symptômes et obtenez une orientation médicale.</p>
+        <a href="/triage" class="btn btn-primary">Démarrer</a>
+    </div>
+
+    <div class="card">
+        <h3>🏥 Structures de Santé</h3>
+        <p>Trouvez un hôpital, clinique ou centre de santé proche.</p>
+        <a href="/structures" class="btn btn-primary">Explorer</a>
+    </div>
+
+    <div class="card">
+        <h3>📅 Rendez-vous</h3>
+        <p>Prenez rendez-vous en ligne avec un spécialiste.</p>
+        <a href="/rendez-vous" class="btn btn-primary">Mes RDV</a>
+    </div>
+
+    <div class="card alert-card">
+        <h3>🚨 Signaler un Accident</h3>
+        <p>Alertez les secours en cas d'accident de la route ou urgence.</p>
+        <a href="/accident" class="btn btn-danger">Signaler</a>
+    </div>
+
+    <div class="card">
+        <h3>📰 Info-Santé</h3>
+        <p>Articles et conseils santé en français et wolof.</p>
+        <a href="/infosante" class="btn btn-primary">Lire</a>
+    </div>
+
+    <div class="card">
+        <h3>💳 Paiement</h3>
+        <p>Payez vos consultations via Wave, Orange Money ou Free Money.</p>
+        <a href="/paiements" class="btn btn-primary">Payer</a>
+    </div>
+</div>
+
+@code {
+    // Le composant utilise [Authorize] pour protéger l'accès
+}

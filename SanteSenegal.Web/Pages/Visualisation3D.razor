@@ -1,0 +1,121 @@
+@page "/visualisation-3d"
+@attribute [Authorize(Roles = "Admin,AgentSante,Medecin")]
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject HttpClient Http
+@using System.Text.Json
+
+<h1>🗺️ Visualisation 3D — SanteSenegal</h1>
+
+<div class="viz3d-container">
+    <!-- Contrôles -->
+    <div class="viz3d-controls">
+        <button class="btn btn-primary" @onclick="LoadAccidents">🚨 Charger accidents</button>
+        <button class="btn btn-info" @onclick="LoadHopitaux">🏥 Charger hôpitaux</button>
+        <button class="btn btn-secondary" @onclick="ClearScene">🧹 Effacer</button>
+    </div>
+
+    <!-- Canvas Three.js -->
+    <div class="viz3d-canvas-wrapper">
+        <canvas id="threejs-canvas" style="width: 100%; height: 600px; display: block;"></canvas>
+    </div>
+
+    <!-- Légende -->
+    <div class="viz3d-legend">
+        <span class="legend-item"><span class="dot" style="background:#e63946"></span> Accident critique</span>
+        <span class="legend-item"><span class="dot" style="background:#ff9f1c"></span> Accident élevé</span>
+        <span class="legend-item"><span class="dot" style="background:#ffd700"></span> Accident moyen</span>
+        <span class="legend-item"><span class="dot" style="background:#3a86ff"></span> Hôpital / Clinique</span>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initThreeJs", "threejs-canvas");
+        }
+    }
+
+    private async Task LoadAccidents()
+    {
+        try
+        {
+            var accidents = await Http.GetFromJsonAsync<List<AccidentDto>>("api/accidents/actifs");
+            if (accidents == null || accidents.Count == 0) return;
+
+            var json = JsonSerializer.Serialize(accidents.Select(a => new
+            {
+                a.Latitude,
+                a.Longitude,
+                a.Description,
+                a.NombreVictimesEstime,
+                a.NombreBlessesGraves,
+                a.NombreDeces,
+                a.RisqueIncendie
+            }));
+
+            await JS.InvokeVoidAsync("loadAccidents3D", json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur chargement accidents 3D: {ex.Message}");
+        }
+    }
+
+    private async Task LoadHopitaux()
+    {
+        try
+        {
+            var structures = await Http.GetFromJsonAsync<List<StructureDto>>("api/structures");
+            if (structures == null) return;
+
+            var hopitaux = structures
+                .Where(s => s.Type == "Hopital" || s.Type == "Clinique")
+                .Select(s => new { s.Latitude, s.Longitude, s.Nom, s.Capacite, s.Adresse })
+                .ToList();
+
+            if (hopitaux.Count == 0) return;
+
+            var json = JsonSerializer.Serialize(hopitaux);
+            await JS.InvokeVoidAsync("loadHopitaux3D", json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur chargement hôpitaux 3D: {ex.Message}");
+        }
+    }
+
+    private async Task ClearScene()
+    {
+        await JS.InvokeVoidAsync("clearAccidents");
+        await JS.InvokeVoidAsync("clearHopitaux");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JS.InvokeVoidAsync("disposeThreeJs");
+    }
+
+    private record AccidentDto(
+        int Id,
+        double Latitude,
+        double Longitude,
+        string? Description,
+        int NombreVictimesEstime,
+        int NombreBlessesGraves,
+        int NombreDeces,
+        bool RisqueIncendie
+    );
+
+    private record StructureDto(
+        int Id,
+        string Nom,
+        string Type,
+        string? Adresse,
+        double Latitude,
+        double Longitude,
+        int Capacite
+    );
+}
