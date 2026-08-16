@@ -17,6 +17,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteSenegal.Web", "SanteSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteSenegal.Mobile", "SanteSenegal.Mobile\SanteSenegal.Mobile.csproj", "{BE94E996-8869-4846-B7B8-FABEA2FDDE5E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{07C2787E-EAC7-C090-1BA3-A61EC2A24D84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bmad-vector-validator", "bmad-vector-validator", "{B089AC6A-1272-0EAD-0185-16DDD531D837}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteSenegal.BmadValidator", "tools\bmad-vector-validator\SanteSenegal.BmadValidator.csproj", "{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bmad-vector-validator.tests", "bmad-vector-validator.tests", "{60C449C5-AF6A-200E-7A6A-5F7C53347DAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteSenegal.BmadValidator.Tests", "tools\bmad-vector-validator.tests\SanteSenegal.BmadValidator.Tests.csproj", "{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,9 +121,39 @@ Global
 		{BE94E996-8869-4846-B7B8-FABEA2FDDE5E}.Release|x64.Build.0 = Release|Any CPU
 		{BE94E996-8869-4846-B7B8-FABEA2FDDE5E}.Release|x86.ActiveCfg = Release|Any CPU
 		{BE94E996-8869-4846-B7B8-FABEA2FDDE5E}.Release|x86.Build.0 = Release|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Debug|x64.Build.0 = Debug|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Debug|x86.Build.0 = Debug|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Release|x64.ActiveCfg = Release|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Release|x64.Build.0 = Release|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51}.Release|x86.Build.0 = Release|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Release|x64.ActiveCfg = Release|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Release|x64.Build.0 = Release|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B089AC6A-1272-0EAD-0185-16DDD531D837} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{CFCE1019-75FE-4A29-A66A-2FF8FD73FE51} = {B089AC6A-1272-0EAD-0185-16DDD531D837}
+		{60C449C5-AF6A-200E-7A6A-5F7C53347DAA} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{3C1339A1-83E7-4557-896D-A2CCE5FEECCF} = {60C449C5-AF6A-200E-7A6A-5F7C53347DAA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F164698-D11A-4C14-88E3-DFADC6BACBF2}
