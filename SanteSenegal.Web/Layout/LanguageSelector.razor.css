@@ -1,0 +1,29 @@
+.language-selector {
+    align-items: center;
+    border: 1px solid #b8c8c3;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    padding: 0.2rem;
+}
+
+.language-selector__option {
+    background: transparent;
+    border: 0;
+    border-radius: 0.35rem;
+    color: #334155;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 900;
+    min-height: 2.25rem;
+    min-width: 2.5rem;
+}
+
+.language-selector__option.is-selected {
+    background: #076b5a;
+    color: #ffffff;
+}
+
+.language-selector__option:focus-visible {
+    outline: 3px solid #facc15;
+    outline-offset: 3px;
+}

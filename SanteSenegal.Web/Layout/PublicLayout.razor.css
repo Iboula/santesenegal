@@ -1,0 +1,43 @@
+.public-shell {
+    background: #f6faf8;
+    color: #102033;
+    min-height: 100vh;
+}
+
+.public-content {
+    margin-inline: auto;
+    max-width: 100%;
+    min-height: calc(100vh - 4.5rem);
+    padding: 1rem 1rem 5.75rem;
+}
+
+.public-content:focus {
+    outline: none;
+}
+
+.public-skip-link {
+    background: #ffffff;
+    border: 2px solid #034c40;
+    border-radius: 0.5rem;
+    color: #034c40;
+    font-weight: 800;
+    left: 1rem;
+    padding: 0.65rem 0.85rem;
+    position: fixed;
+    text-decoration: none;
+    top: 0.75rem;
+    transform: translateY(-160%);
+    z-index: 2000;
+}
+
+.public-skip-link:focus {
+    outline: 3px solid #facc15;
+    outline-offset: 3px;
+    transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+    .public-content {
+        padding: 1.25rem 2rem 2.5rem;
+    }
+}
