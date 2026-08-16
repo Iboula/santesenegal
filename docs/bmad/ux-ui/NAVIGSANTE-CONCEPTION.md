@@ -1,3 +1,23 @@
+---
+id: UX-NAVIGSANTE-CONCEPTION
+title: NavigSante Module d'Information et Orientation Sante
+status: draft
+tags:
+  - ux
+  - orientation
+  - triage
+  - geolocation
+  - alerts
+entities:
+  - NavigSante
+  - TriageEngine
+  - Cartographe
+  - Assistant
+  - Alertes
+created: 2026-08-13
+updated: 2026-08-16
+---
+
 # NavigSante — Module d'Information et Orientation Santé
 
 **Agent** : PM + Architect + UX/UI  

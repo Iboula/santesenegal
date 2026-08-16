@@ -1,3 +1,22 @@
+---
+id: UX-DESIGN-SYSTEM
+title: SanteSenegal Design System
+status: draft
+tags:
+  - ux
+  - ui
+  - design-system
+  - accessibility
+entities:
+  - Design System
+  - Bottom Navigation
+  - WCAG
+  - Typography
+  - Color Palette
+created: 2026-08-13
+updated: 2026-08-16
+---
+
 # SanteSenegal — Design System
 
 **Agent** : UX/UI  

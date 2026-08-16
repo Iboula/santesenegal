@@ -1,3 +1,22 @@
+---
+id: UX-RESEARCH
+title: SanteSenegal UX Research and Personas
+status: draft
+tags:
+  - ux
+  - research
+  - personas
+  - accessibility
+entities:
+  - Aminata
+  - Dr Ndiaye
+  - Patient
+  - Rendez-vous
+  - Mobile Money
+created: 2026-08-13
+updated: 2026-08-16
+---
+
 # SanteSenegal — UX Research & Personas
 
 **Agent** : UX/UI  

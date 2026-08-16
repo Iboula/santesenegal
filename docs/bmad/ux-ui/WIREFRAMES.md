@@ -1,3 +1,22 @@
+---
+id: UX-WIREFRAMES
+title: SanteSenegal Wireframes
+status: draft
+tags:
+  - ux
+  - ui
+  - wireframes
+  - mobile-first
+entities:
+  - Accueil Patient
+  - SearchBar
+  - CategoryChip
+  - StructureCard
+  - BottomNav
+created: 2026-08-13
+updated: 2026-08-16
+---
+
 # SanteSenegal — Wireframes
 
 **Agent** : UX/UI  
