@@ -1,0 +1,20 @@
+<section class="ds-state" role="alert" aria-labelledby="@TitleId">
+    <h3 id="@TitleId" class="ds-state__title">@Title</h3>
+    <p class="ds-state__message">@Message</p>
+    @if (Action is not null)
+    {
+        <div class="ds-state__action">
+            @Action
+        </div>
+    }
+</section>
+
+@code {
+    private readonly string _id = $"error-{Guid.NewGuid():N}";
+
+    [Parameter] public string Title { get; set; } = "Une erreur est survenue";
+    [Parameter] public string Message { get; set; } = "Veuillez réessayer dans un instant.";
+    [Parameter] public RenderFragment? Action { get; set; }
+
+    private string TitleId => $"{_id}-title";
+}

@@ -1,6 +1,6 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
+@import url("tokens.css");
+@import url("typography.css");
+@import url("components.css");
 
 h1:focus {
     outline: none;

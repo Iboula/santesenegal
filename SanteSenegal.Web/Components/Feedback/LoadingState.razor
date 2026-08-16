@@ -1,0 +1,9 @@
+<div class="ds-state ds-loading" role="status" aria-live="polite" aria-label="@AriaLabel">
+    <span class="ds-loading__spinner" aria-hidden="true"></span>
+    <span>@Message</span>
+</div>
+
+@code {
+    [Parameter] public string Message { get; set; } = "Chargement en cours";
+    [Parameter] public string AriaLabel { get; set; } = "Chargement";
+}
