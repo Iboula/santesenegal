@@ -1,0 +1,30 @@
+<div class="language-selector" role="group" aria-label="Selection de langue">
+    <button type="button"
+            class="language-selector__option @GetOptionClass("fr")"
+            aria-pressed="@GetAriaPressed("fr")"
+            @onclick='() => SelectLanguage("fr")'>
+        FR
+    </button>
+    <button type="button"
+            class="language-selector__option @GetOptionClass("wo")"
+            aria-pressed="@GetAriaPressed("wo")"
+            lang="wo"
+            @onclick='() => SelectLanguage("wo")'>
+        WO
+    </button>
+</div>
+
+@code {
+    private string _selectedLanguage = "fr";
+
+    private bool IsSelected(string language) => _selectedLanguage == language;
+
+    private string GetOptionClass(string language) => IsSelected(language) ? "is-selected" : string.Empty;
+
+    private string GetAriaPressed(string language) => IsSelected(language) ? "true" : "false";
+
+    private void SelectLanguage(string language)
+    {
+        _selectedLanguage = language;
+    }
+}
