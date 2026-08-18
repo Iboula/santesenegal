@@ -28,7 +28,7 @@
                 <FacilityCard Title="@result.Name"
                               Subtitle="@($"{result.Type} · {result.Address} · {result.Specialty}")"
                               Availability="@result.Availability"
-                              Distance="@($"{result.DistanceKm:0.#} km")"
+                              Distance="@FormatDistance(result.DistanceKm)"
                               WaitingTime="@result.WaitingTime">
                     <Actions>
                         <PrimaryButton Href="/structures" AriaLabel="@($"Consulter {result.Name}")">
@@ -45,4 +45,9 @@
     [Parameter] public SearchUiState State { get; set; }
     [Parameter] public IReadOnlyList<FacilitySearchItem> Results { get; set; } = Array.Empty<FacilitySearchItem>();
     [Parameter] public string? Query { get; set; }
+
+    private static string? FormatDistance(double? distanceKm)
+    {
+        return distanceKm.HasValue ? $"{distanceKm.Value:0.#} km" : null;
+    }
 }

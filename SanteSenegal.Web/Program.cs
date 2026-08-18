@@ -32,5 +32,6 @@ builder.Services.AddScoped<INavigSanteService, NavigSanteServiceClient>();
 builder.Services.AddScoped<IPaiementService, PaiementServiceClient>();
 builder.Services.AddScoped<INotificationService, NotificationServiceClient>();
 builder.Services.AddScoped<IAlertesHubClient, AlertesHubClient>();
+builder.Services.AddScoped<IFacilitySearchService, FacilitySearchService>();
 
 await builder.Build().RunAsync();

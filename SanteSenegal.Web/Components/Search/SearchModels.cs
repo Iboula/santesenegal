@@ -19,8 +19,8 @@ public sealed record FacilitySearchItem(
     string Region,
     string Specialty,
     string Service,
-    string WaitingTime,
-    double DistanceKm,
+    string? WaitingTime,
+    double? DistanceKm,
     IReadOnlyList<string> Keywords);
 
 public sealed record SearchFilterState(

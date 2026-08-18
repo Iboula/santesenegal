@@ -1,7 +1,9 @@
 using Bunit;
-using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using SanteSenegal.Web.Components.Badges;
 using SanteSenegal.Web.Components.Search;
+using SanteSenegal.Web.Pages;
+using SanteSenegal.Web.Services;
 using Xunit;
 
 namespace SanteSenegal.Web.Tests;
@@ -59,17 +61,7 @@ public sealed class SearchFacilitiesTests : TestContext
             .Add(p => p.Query, "hôpital")
             .Add(p => p.Results, new[]
             {
-                new FacilitySearchItem(
-                    "Hôpital Principal",
-                    "Hôpital",
-                    "Dakar",
-                    StatusBadgeType.Ouvert,
-                    "Dakar",
-                    "Urgences",
-                    "hôpital",
-                    "15 min",
-                    2.4,
-                    new[] { "hôpital" })
+                CreateFacility("Hôpital Principal")
             }));
 
         Assert.Contains("Hôpital Principal", component.Markup);
@@ -109,5 +101,145 @@ public sealed class SearchFacilitiesTests : TestContext
 
         Assert.NotNull(component.Find("[role='alert']"));
         Assert.Contains("Recherche indisponible", component.Markup);
+    }
+
+    [Fact]
+    public void SearchFacilities_UsesInjectedServiceForSuccessfulSearch()
+    {
+        var service = RegisterFacilitySearchService([CreateFacility("Structure API")]);
+
+        var component = RenderComponent<SearchFacilities>();
+
+        component.Find("input[aria-label='Rechercher un établissement, un symptôme, une spécialité ou un service']").Input("fièvre");
+        component.Find("form").Submit();
+
+        component.WaitForAssertion(() => Assert.Contains("Structure API", component.Markup));
+        Assert.Equal("fièvre", service.LastQuery);
+    }
+
+    [Fact]
+    public void SearchFacilities_RendersNoResultsWhenServiceReturnsEmpty()
+    {
+        RegisterFacilitySearchService([]);
+
+        var component = RenderComponent<SearchFacilities>();
+
+        component.Find("form").Submit();
+
+        component.WaitForAssertion(() => Assert.Contains("Aucun établissement trouvé", component.Markup));
+    }
+
+    [Fact]
+    public void SearchFacilities_RendersErrorWhenServiceFails()
+    {
+        RegisterFacilitySearchService([], throwOnSearch: true);
+
+        var component = RenderComponent<SearchFacilities>();
+
+        component.Find("form").Submit();
+
+        component.WaitForAssertion(() => Assert.Contains("Recherche indisponible", component.Markup));
+    }
+
+    [Fact]
+    public void SearchFacilities_PassesFiltersToInjectedService()
+    {
+        var service = RegisterFacilitySearchService([CreateFacility("Structure filtrée")]);
+        var component = RenderComponent<SearchFacilities>();
+
+        component.Find("button[aria-controls='search-filters-panel']").Click();
+        component.Find("select[aria-label='Filtrer par région']").Change("Thiès");
+        component.Find("select[aria-label=\"Filtrer par type d'établissement\"]").Change("Centre de santé");
+        component.Find("form").Submit();
+
+        component.WaitForAssertion(() =>
+        {
+            Assert.Equal("Thiès", service.LastFilters?.Region);
+            Assert.Equal("Centre de santé", service.LastFilters?.FacilityType);
+        });
+    }
+
+    [Fact]
+    public void SearchFacilities_DoesNotContainHardcodedFacilityData()
+    {
+        var source = ReadSourceFile("SanteSenegal.Web", "Pages", "SearchFacilities.razor");
+
+        Assert.DoesNotContain("static readonly", source, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Facilities =", source, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Task.Delay", source, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Normalize(", source, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("erreur", source, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private FakeFacilitySearchService RegisterFacilitySearchService(
+        IReadOnlyList<FacilitySearchItem> results,
+        bool throwOnSearch = false)
+    {
+        var service = new FakeFacilitySearchService(results, throwOnSearch);
+        Services.AddSingleton<IFacilitySearchService>(service);
+        return service;
+    }
+
+    private static FacilitySearchItem CreateFacility(string name)
+    {
+        return new FacilitySearchItem(
+            name,
+            "Hôpital",
+            "Dakar",
+            StatusBadgeType.Ouvert,
+            "Dakar",
+            "Urgences",
+            "Consultation",
+            "15 min",
+            2.4,
+            new[] { "hôpital" });
+    }
+
+    private static string ReadSourceFile(params string[] pathParts)
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            var candidate = Path.Combine(new[] { current.FullName }.Concat(pathParts).ToArray());
+            if (File.Exists(candidate))
+            {
+                return File.ReadAllText(candidate);
+            }
+
+            current = current.Parent;
+        }
+
+        throw new FileNotFoundException("Unable to locate source file.", Path.Combine(pathParts));
+    }
+
+    private sealed class FakeFacilitySearchService : IFacilitySearchService
+    {
+        private readonly IReadOnlyList<FacilitySearchItem> _results;
+        private readonly bool _throwOnSearch;
+
+        public FakeFacilitySearchService(IReadOnlyList<FacilitySearchItem> results, bool throwOnSearch)
+        {
+            _results = results;
+            _throwOnSearch = throwOnSearch;
+        }
+
+        public string? LastQuery { get; private set; }
+        public SearchFilterState? LastFilters { get; private set; }
+
+        public Task<IReadOnlyList<FacilitySearchItem>> SearchAsync(
+            string? query,
+            SearchFilterState filters,
+            CancellationToken cancellationToken = default)
+        {
+            LastQuery = query;
+            LastFilters = filters;
+
+            if (_throwOnSearch)
+            {
+                throw new InvalidOperationException("Service unavailable.");
+            }
+
+            return Task.FromResult(_results);
+        }
     }
 }
