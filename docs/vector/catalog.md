@@ -11,13 +11,17 @@ entities:
   - US-UI-001
   - US-UI-002
   - US-UI-003
+  - US-UI-004
+  - UX-US-UI-004
+  - ADR-UI-004
+  - SPEC-US-UI-004
   - UX-DESIGN-SYSTEM
   - UX-WIREFRAMES
   - UX-RESEARCH
   - UX-NAVIGSANTE-CONCEPTION
   - BMAD-AGENTS-001
 created: 2026-08-16
-updated: 2026-08-16
+updated: 2026-08-17
 ---
 
 # Catalogue documentaire vectorisable
@@ -29,6 +33,10 @@ Ce catalogue liste les documents migres dans le cadre de `BMAD-VEC-002`.
 | US-UI-001 | Story | Refonte complete de la page Home | accepted | `docs/stories/US-UI-001-refonte-home.md` | - |
 | US-UI-002 | Story | Refonte de la navigation publique | ready-for-review | `docs/stories/US-UI-002-refonte-navigation-publique.md` | US-UI-001 |
 | US-UI-003 | Story | Design System | ready-for-review | `docs/stories/US-UI-003-design-system.md` | US-UI-001, US-UI-002 |
+| US-UI-004 | Story | Recherche des établissements de santé | ready-for-review | `docs/stories/US-UI-004-recherche-etablissements.md` | US-UI-001, US-UI-002, US-UI-003 |
+| UX-US-UI-004 | UX | Wireframes recherche des établissements | ready-for-review | `docs/ux/US-UI-004-wireframes.md` | US-UI-004 |
+| ADR-UI-004 | ADR | Architecture de la recherche des établissements | accepted | `docs/adr/ADR-UI-004-recherche-etablissements.md` | US-UI-004, US-UI-003 |
+| SPEC-US-UI-004 | SPEC | Specification implementation recherche établissements | ready-for-review | `docs/specs/US-UI-004-spec.md` | US-UI-004, UX-US-UI-004, ADR-UI-004, US-UI-003 |
 | UX-RESEARCH | UX | SanteSenegal UX Research and Personas | draft | `docs/bmad/ux-ui/UX_RESEARCH.md` | - |
 | UX-WIREFRAMES | UX | SanteSenegal Wireframes | draft | `docs/bmad/ux-ui/WIREFRAMES.md` | - |
 | UX-DESIGN-SYSTEM | UX | SanteSenegal Design System | draft | `docs/bmad/ux-ui/DESIGN_SYSTEM.md` | UX-RESEARCH, UX-WIREFRAMES |
@@ -44,3 +52,4 @@ Ce catalogue liste les documents migres dans le cadre de `BMAD-VEC-002`.
 - Les documents UX sont conserves dans leur emplacement historique `docs/bmad/ux-ui` et enrichis par front matter.
 - Aucun ADR ou SPEC specifique aux stories UI n'a ete cree artificiellement.
 - Les documents agents officialisent les roles nommes du workflow BMAD.
+- Les documents `US-UI-004` préparent la future recherche des établissements sans implémenter la fonctionnalité.

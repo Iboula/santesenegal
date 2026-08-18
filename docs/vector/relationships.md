@@ -11,6 +11,10 @@ entities:
   - US-UI-001
   - US-UI-002
   - US-UI-003
+  - US-UI-004
+  - UX-US-UI-004
+  - ADR-UI-004
+  - SPEC-US-UI-004
   - FacilityCard
   - StatusBadge
   - PrimaryButton
@@ -24,11 +28,11 @@ updated: 2026-08-17
 
 # Matrice des relations documentaires
 
-Cette matrice documente les premieres relations connues pour le corpus BMAD vectorisable.
+Cette matrice documente les relations connues pour le corpus BMAD vectorisable.
 
-Elle est documentaire uniquement et ne definit aucune implementation technique de base vectorielle.
+Elle est documentaire uniquement et ne définit aucune implémentation technique de base vectorielle.
 
-## Chaine de dependances UI
+## Chaîne de dépendances UI
 
 ```text
 US-UI-001
@@ -38,6 +42,9 @@ US-UI-002
    |
    v
 US-UI-003
+   |
+   v
+US-UI-004
 ```
 
 ## Relations par story
@@ -66,6 +73,32 @@ US-UI-003
 |-- StatusBadge
 |-- PrimaryButton
 |-- SecondaryButton
+|-- LoadingState
+|-- EmptyState
+`-- ErrorState
+```
+
+```text
+US-UI-004
+|-- UX-US-UI-004
+|-- ADR-UI-004
+`-- SPEC-US-UI-004
+```
+
+```text
+ADR-UI-004
+|-- SearchFacilities
+|-- SearchBar
+|-- SearchFilters
+|-- SearchResults
+`-- FacilityCard
+```
+
+```text
+SPEC-US-UI-004
+|-- DesignTextInput
+|-- FacilityCard
+|-- StatusBadge
 |-- LoadingState
 |-- EmptyState
 `-- ErrorState
