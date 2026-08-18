@@ -1,0 +1,48 @@
+<section class="search-results" aria-label="Résultats de recherche des établissements">
+    <SearchResultsHeader State="@State" Count="@Results.Count" Query="@Query" />
+
+    @if (State == SearchUiState.Searching)
+    {
+        <LoadingState Message="Recherche des établissements en cours" AriaLabel="Recherche des établissements en cours" />
+    }
+    else if (State == SearchUiState.Error)
+    {
+        <ErrorState Title="Recherche indisponible"
+                    Message="La recherche n'a pas pu être affichée. Réessayez avec un autre critère." />
+    }
+    else if (State == SearchUiState.NoResults)
+    {
+        <EmptyState Title="Aucun établissement trouvé"
+                    Message="Ajustez les filtres ou recherchez un autre symptôme, service ou établissement." />
+    }
+    else if (State == SearchUiState.Idle)
+    {
+        <EmptyState Title="Lancez une recherche"
+                    Message="Essayez fièvre, radiographie, pédiatre, pharmacie, maternité ou hôpital." />
+    }
+    else
+    {
+        <div class="search-results__list" aria-label="Résultats de recherche">
+            @foreach (var result in Results)
+            {
+                <FacilityCard Title="@result.Name"
+                              Subtitle="@($"{result.Type} · {result.Address} · {result.Specialty}")"
+                              Availability="@result.Availability"
+                              Distance="@($"{result.DistanceKm:0.#} km")"
+                              WaitingTime="@result.WaitingTime">
+                    <Actions>
+                        <PrimaryButton Href="/structures" AriaLabel="@($"Consulter {result.Name}")">
+                            Consulter
+                        </PrimaryButton>
+                    </Actions>
+                </FacilityCard>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public SearchUiState State { get; set; }
+    [Parameter] public IReadOnlyList<FacilitySearchItem> Results { get; set; } = Array.Empty<FacilitySearchItem>();
+    [Parameter] public string? Query { get; set; }
+}

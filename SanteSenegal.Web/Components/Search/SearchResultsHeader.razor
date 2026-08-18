@@ -1,0 +1,44 @@
+<header class="search-results-header" aria-live="polite">
+    <div>
+        <p class="search-results-header__eyebrow">@StateLabel</p>
+        <h2>@Title</h2>
+    </div>
+    <p>@Summary</p>
+</header>
+
+@code {
+    [Parameter] public SearchUiState State { get; set; }
+    [Parameter] public int Count { get; set; }
+    [Parameter] public string? Query { get; set; }
+
+    private string StateLabel => State switch
+    {
+        SearchUiState.Idle => "Prêt",
+        SearchUiState.Searching => "Recherche",
+        SearchUiState.ResultsFound => "Résultats",
+        SearchUiState.NoResults => "Aucun résultat",
+        SearchUiState.Error => "Erreur",
+        _ => "Recherche"
+    };
+
+    private string Title => State switch
+    {
+        SearchUiState.Idle => "Commencez par une recherche",
+        SearchUiState.Searching => "Recherche en cours",
+        SearchUiState.ResultsFound => $"{Count} établissement{(Count > 1 ? "s" : string.Empty)} trouvé{(Count > 1 ? "s" : string.Empty)}",
+        SearchUiState.NoResults => "Aucun établissement trouvé",
+        SearchUiState.Error => "Recherche indisponible",
+        _ => "Résultats"
+    };
+
+    private string Summary => State switch
+    {
+        SearchUiState.Idle => "Utilisez une recherche guidée ou libre pour trouver un établissement.",
+        SearchUiState.Searching => "Les résultats sont filtrés selon votre besoin.",
+        SearchUiState.ResultsFound when !string.IsNullOrWhiteSpace(Query) => $"Résultats pour « {Query} ».",
+        SearchUiState.ResultsFound => "Résultats filtrés selon les critères sélectionnés.",
+        SearchUiState.NoResults => "Essayez un autre symptôme, service ou filtre.",
+        SearchUiState.Error => "Veuillez relancer la recherche.",
+        _ => string.Empty
+    };
+}

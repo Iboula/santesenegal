@@ -1,0 +1,57 @@
+<section class="search-bar" aria-labelledby="facility-search-title">
+    <div class="search-bar__intro">
+        <p class="search-bar__eyebrow">Recherche guidée et libre</p>
+        <h2 id="facility-search-title">Trouvez un établissement adapté</h2>
+        <p>Recherchez par établissement, symptôme, spécialité ou service. Préparé pour le français et le wolof.</p>
+    </div>
+
+    <form class="search-bar__form" role="search" @onsubmit="HandleSubmit" @onsubmit:preventDefault>
+        <DesignTextInput Label="Recherche"
+                         Name="facility-search"
+                         Value="@Query"
+                         ValueChanged="QueryChanged"
+                         Placeholder="Médecin, symptôme, service, établissement..."
+                         AriaLabel="Rechercher un établissement, un symptôme, une spécialité ou un service" />
+
+        <PrimaryButton Type="submit" AriaLabel="Lancer la recherche des établissements">
+            Rechercher
+        </PrimaryButton>
+    </form>
+
+    <div class="search-bar__guided" aria-label="Suggestions de recherche">
+        @foreach (var suggestion in Suggestions)
+        {
+            <SecondaryButton AriaLabel="@($"Rechercher {suggestion}")"
+                             OnClick="@(() => SelectSuggestion(suggestion))">
+                @suggestion
+            </SecondaryButton>
+        }
+    </div>
+</section>
+
+@code {
+    private static readonly string[] Suggestions =
+    [
+        "fièvre",
+        "radiographie",
+        "pédiatre",
+        "pharmacie",
+        "maternité",
+        "hôpital"
+    ];
+
+    [Parameter] public string? Query { get; set; }
+    [Parameter] public EventCallback<string?> QueryChanged { get; set; }
+    [Parameter] public EventCallback OnSearch { get; set; }
+
+    private async Task HandleSubmit()
+    {
+        await OnSearch.InvokeAsync();
+    }
+
+    private async Task SelectSuggestion(string suggestion)
+    {
+        await QueryChanged.InvokeAsync(suggestion);
+        await OnSearch.InvokeAsync();
+    }
+}

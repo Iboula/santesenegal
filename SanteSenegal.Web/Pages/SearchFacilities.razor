@@ -1,0 +1,223 @@
+@page "/structures/recherche"
+@page "/search-facilities"
+@using System.Globalization
+@using System.Text
+
+<PageTitle>Recherche des établissements</PageTitle>
+
+<main class="facility-search-page" id="main-content">
+    <section class="facility-search-page__hero" aria-labelledby="facility-search-heading">
+        <p class="facility-search-page__eyebrow">Santé Sénégal</p>
+        <h1 id="facility-search-heading">Recherche des établissements de santé</h1>
+        <p>
+            Trouvez un hôpital, une pharmacie, une maternité, un service ou une spécialité sans carte ni géolocalisation.
+        </p>
+    </section>
+
+    <section class="facility-search-page__workspace" aria-label="Recherche et résultats">
+        <div class="facility-search-page__controls">
+            <SearchBar Query="@_query"
+                       QueryChanged="UpdateQuery"
+                       OnSearch="RunSearchAsync" />
+
+            <SearchFilters Filters="@_filters"
+                           FiltersChanged="UpdateFiltersAsync" />
+        </div>
+
+        <SearchResults State="@_state"
+                       Results="@_results"
+                       Query="@_query" />
+    </section>
+</main>
+
+@code {
+    private string? _query;
+    private SearchFilterState _filters = SearchFilterState.Default;
+    private SearchUiState _state = SearchUiState.Idle;
+    private IReadOnlyList<FacilitySearchItem> _results = Array.Empty<FacilitySearchItem>();
+
+    private static readonly IReadOnlyList<FacilitySearchItem> Facilities =
+    [
+        new(
+            "Hôpital Principal de Dakar",
+            "Hôpital",
+            "Plateau, Dakar",
+            StatusBadgeType.Ouvert,
+            "Dakar",
+            "Urgences",
+            "hôpital",
+            "15 min",
+            2.4,
+            ["hôpital", "hopital", "urgence", "fièvre", "fievre", "radiographie", "soins"]),
+        new(
+            "Centre de santé Mermoz",
+            "Centre de santé",
+            "Mermoz, Dakar",
+            StatusBadgeType.Disponible,
+            "Dakar",
+            "Pédiatrie",
+            "consultation",
+            "20 min",
+            4.8,
+            ["pédiatre", "pediatre", "fièvre", "fievre", "enfant", "consultation"]),
+        new(
+            "Clinique Madeleine",
+            "Clinique",
+            "Avenue Pasteur, Dakar",
+            StatusBadgeType.Disponible,
+            "Dakar",
+            "Maternité",
+            "maternité",
+            "25 min",
+            6.1,
+            ["maternité", "maternite", "grossesse", "clinique", "naissance"]),
+        new(
+            "Pharmacie Guigon",
+            "Pharmacie",
+            "Avenue Pompidou, Dakar",
+            StatusBadgeType.Ouvert,
+            "Dakar",
+            "Pharmacie",
+            "pharmacie",
+            "5 min",
+            1.3,
+            ["pharmacie", "médicament", "medicament", "ordonnance"]),
+        new(
+            "Centre d'imagerie de Thiès",
+            "Centre de santé",
+            "Quartier Grand Standing, Thiès",
+            StatusBadgeType.Disponible,
+            "Thiès",
+            "Radiologie",
+            "radiographie",
+            "30 min",
+            18.0,
+            ["radiographie", "radio", "imagerie", "scanner"]),
+        new(
+            "Hôpital régional de Saint-Louis",
+            "Hôpital",
+            "Sor, Saint-Louis",
+            StatusBadgeType.Urgence,
+            "Saint-Louis",
+            "Urgences",
+            "hôpital",
+            "10 min",
+            28.0,
+            ["hôpital", "hopital", "urgence", "fièvre", "fievre", "trauma"])
+    ];
+
+    private Task UpdateQuery(string? query)
+    {
+        _query = query;
+        if (_state != SearchUiState.Idle)
+        {
+            ApplySearch();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task UpdateFiltersAsync(SearchFilterState filters)
+    {
+        _filters = filters;
+        if (_state != SearchUiState.Idle)
+        {
+            ApplySearch();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task RunSearchAsync()
+    {
+        if (string.Equals(Normalize(_query), "erreur", StringComparison.Ordinal))
+        {
+            _state = SearchUiState.Error;
+            _results = Array.Empty<FacilitySearchItem>();
+            return;
+        }
+
+        _state = SearchUiState.Searching;
+        await Task.Delay(150);
+        ApplySearch();
+    }
+
+    private void ApplySearch()
+    {
+        var normalizedQuery = Normalize(_query);
+        var results = Facilities.Where(facility => MatchesQuery(facility, normalizedQuery) && MatchesFilters(facility)).ToArray();
+
+        _results = results;
+        _state = results.Length == 0 ? SearchUiState.NoResults : SearchUiState.ResultsFound;
+    }
+
+    private bool MatchesQuery(FacilitySearchItem facility, string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return true;
+        }
+
+        return Normalize(facility.Name).Contains(query, StringComparison.Ordinal)
+            || Normalize(facility.Type).Contains(query, StringComparison.Ordinal)
+            || Normalize(facility.Specialty).Contains(query, StringComparison.Ordinal)
+            || Normalize(facility.Service).Contains(query, StringComparison.Ordinal)
+            || facility.Keywords.Any(keyword => Normalize(keyword).Contains(query, StringComparison.Ordinal));
+    }
+
+    private bool MatchesFilters(FacilitySearchItem facility)
+    {
+        return facility.DistanceKm <= _filters.DistanceKm
+            && MatchesText(facility.Region, _filters.Region)
+            && MatchesText(facility.Type, _filters.FacilityType)
+            && MatchesText(facility.Specialty, _filters.Specialty)
+            && MatchesAvailability(facility);
+    }
+
+    private bool MatchesAvailability(FacilitySearchItem facility)
+    {
+        if (string.IsNullOrWhiteSpace(_filters.Availability))
+        {
+            return true;
+        }
+
+        var availability = facility.Availability switch
+        {
+            StatusBadgeType.Ouvert => "Ouvert",
+            StatusBadgeType.Disponible => "Disponible",
+            StatusBadgeType.Urgence => "Urgence",
+            StatusBadgeType.Occupe => "Occupé",
+            StatusBadgeType.Ferme => "Fermé",
+            _ => string.Empty
+        };
+
+        return string.Equals(availability, _filters.Availability, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool MatchesText(string value, string filter)
+    {
+        return string.IsNullOrWhiteSpace(filter)
+            || string.Equals(Normalize(value), Normalize(filter), StringComparison.Ordinal);
+    }
+
+    private static string Normalize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var normalized = value.Trim().ToLowerInvariant().Normalize(NormalizationForm.FormD);
+        var builder = new StringBuilder(normalized.Length);
+
+        foreach (var character in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
+            {
+                builder.Append(character);
+            }
+        }
+
+        return builder.ToString().Normalize(NormalizationForm.FormC);
+    }
+}

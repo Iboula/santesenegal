@@ -11,7 +11,8 @@ else
     <button class="ds-button ds-button--secondary"
             type="@Type"
             disabled="@Disabled"
-            aria-label="@AriaLabel">
+            aria-label="@AriaLabel"
+            @onclick="OnClick">
         @ChildContent
     </button>
 }
@@ -22,4 +23,5 @@ else
     [Parameter] public string Type { get; set; } = "button";
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public string? AriaLabel { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 }

@@ -1,0 +1,9 @@
+.search-results {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.search-results__list {
+    display: grid;
+    gap: var(--space-md);
+}

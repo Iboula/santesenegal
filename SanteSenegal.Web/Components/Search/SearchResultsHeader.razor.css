@@ -1,0 +1,28 @@
+.search-results-header {
+    align-items: start;
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.search-results-header h2,
+.search-results-header p {
+    margin: 0;
+}
+
+.search-results-header__eyebrow {
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.search-results-header > p {
+    color: var(--color-text-muted);
+}
+
+@media (min-width: 768px) {
+    .search-results-header {
+        align-items: end;
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+}

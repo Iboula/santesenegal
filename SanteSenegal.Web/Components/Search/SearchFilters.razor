@@ -1,0 +1,108 @@
+<aside class="search-filters" aria-labelledby="search-filters-title">
+    <button class="search-filters__toggle"
+            type="button"
+            aria-controls="search-filters-panel"
+            aria-expanded="@(_expanded.ToString().ToLowerInvariant())"
+            @onclick="ToggleFilters">
+        Filtres
+    </button>
+
+    <div id="search-filters-panel" class="search-filters__panel @( _expanded ? "search-filters__panel--expanded" : string.Empty )">
+        <div class="search-filters__header">
+            <h2 id="search-filters-title">Filtres</h2>
+            <p>Affinez la recherche sans carte ni géolocalisation.</p>
+        </div>
+
+        <label class="search-filters__field">
+            <span>Distance maximale</span>
+            <input type="range"
+                   min="1"
+                   max="30"
+                   step="1"
+                   value="@Filters.DistanceKm"
+                   aria-label="Distance maximale en kilomètres"
+                   @onchange="UpdateDistance" />
+            <strong>@Filters.DistanceKm km</strong>
+        </label>
+
+        <label class="search-filters__field">
+            <span>Région</span>
+            <select value="@Filters.Region" aria-label="Filtrer par région" @onchange="UpdateRegion">
+                <option value="">Toutes les régions</option>
+                <option value="Dakar">Dakar</option>
+                <option value="Thiès">Thiès</option>
+                <option value="Saint-Louis">Saint-Louis</option>
+            </select>
+        </label>
+
+        <label class="search-filters__field">
+            <span>Disponibilité</span>
+            <select value="@Filters.Availability" aria-label="Filtrer par disponibilité" @onchange="UpdateAvailability">
+                <option value="">Toutes</option>
+                <option value="Ouvert">Ouvert</option>
+                <option value="Disponible">Disponible</option>
+                <option value="Urgence">Urgence</option>
+            </select>
+        </label>
+
+        <label class="search-filters__field">
+            <span>Type d'établissement</span>
+            <select value="@Filters.FacilityType" aria-label="Filtrer par type d'établissement" @onchange="UpdateFacilityType">
+                <option value="">Tous les types</option>
+                <option value="Hôpital">Hôpital</option>
+                <option value="Centre de santé">Centre de santé</option>
+                <option value="Clinique">Clinique</option>
+                <option value="Pharmacie">Pharmacie</option>
+            </select>
+        </label>
+
+        <label class="search-filters__field">
+            <span>Spécialité</span>
+            <select value="@Filters.Specialty" aria-label="Filtrer par spécialité" @onchange="UpdateSpecialty">
+                <option value="">Toutes les spécialités</option>
+                <option value="Pédiatrie">Pédiatrie</option>
+                <option value="Maternité">Maternité</option>
+                <option value="Radiologie">Radiologie</option>
+                <option value="Pharmacie">Pharmacie</option>
+            </select>
+        </label>
+
+        <SecondaryButton AriaLabel="Réinitialiser les filtres" OnClick="ResetFilters">
+            Réinitialiser
+        </SecondaryButton>
+    </div>
+</aside>
+
+@code {
+    private bool _expanded;
+
+    [Parameter] public SearchFilterState Filters { get; set; } = SearchFilterState.Default;
+    [Parameter] public EventCallback<SearchFilterState> FiltersChanged { get; set; }
+
+    private void ToggleFilters()
+    {
+        _expanded = !_expanded;
+    }
+
+    private Task UpdateDistance(ChangeEventArgs args)
+    {
+        var value = int.TryParse(args.Value?.ToString(), out var distance) ? distance : Filters.DistanceKm;
+        return Update(Filters with { DistanceKm = value });
+    }
+
+    private Task UpdateRegion(ChangeEventArgs args) => Update(Filters with { Region = args.Value?.ToString() ?? string.Empty });
+
+    private Task UpdateAvailability(ChangeEventArgs args) => Update(Filters with { Availability = args.Value?.ToString() ?? string.Empty });
+
+    private Task UpdateFacilityType(ChangeEventArgs args) => Update(Filters with { FacilityType = args.Value?.ToString() ?? string.Empty });
+
+    private Task UpdateSpecialty(ChangeEventArgs args) => Update(Filters with { Specialty = args.Value?.ToString() ?? string.Empty });
+
+    private Task ResetFilters() => Update(SearchFilterState.Default);
+
+    private async Task Update(SearchFilterState filters)
+    {
+        Filters = filters;
+        await FiltersChanged.InvokeAsync(filters);
+    }
+}

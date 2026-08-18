@@ -1,16 +1,26 @@
 <label class="ds-input">
     <span class="ds-input__label">@Label</span>
     <input class="ds-input__control"
+           type="@Type"
            name="@Name"
            value="@Value"
            placeholder="@Placeholder"
-           aria-label="@AriaLabel" />
+           aria-label="@AriaLabel"
+           @oninput="HandleInput" />
 </label>
 
 @code {
     [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
     [Parameter] public string? Name { get; set; }
+    [Parameter] public string Type { get; set; } = "text";
     [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public string? AriaLabel { get; set; }
+
+    private Task HandleInput(ChangeEventArgs args)
+    {
+        Value = args.Value?.ToString();
+        return ValueChanged.InvokeAsync(Value);
+    }
 }
