@@ -1,0 +1,16 @@
+<label class="ds-input">
+    <span class="ds-input__label">@Label</span>
+    <input class="ds-input__control"
+           name="@Name"
+           value="@Value"
+           placeholder="@Placeholder"
+           aria-label="@AriaLabel" />
+</label>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? AriaLabel { get; set; }
+}

@@ -1,0 +1,22 @@
+<section class="ds-section" aria-labelledby="@TitleId">
+    <header class="ds-section__header">
+        <h2 id="@TitleId">@Title</h2>
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <p>@Description</p>
+        }
+    </header>
+    <div class="ds-section__content">
+        @ChildContent
+    </div>
+</section>
+
+@code {
+    private readonly string _id = $"section-{Guid.NewGuid():N}";
+
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string TitleId => $"{_id}-title";
+}

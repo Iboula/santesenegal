@@ -1,0 +1,25 @@
+@if (!string.IsNullOrWhiteSpace(Href) && !Disabled)
+{
+    <a class="ds-button ds-button--primary"
+       href="@Href"
+       aria-label="@AriaLabel">
+        @ChildContent
+    </a>
+}
+else
+{
+    <button class="ds-button ds-button--primary"
+            type="@Type"
+            disabled="@Disabled"
+            aria-label="@AriaLabel">
+        @ChildContent
+    </button>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Href { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? AriaLabel { get; set; }
+}

@@ -1,0 +1,29 @@
+<span class="ds-badge @CssClass" role="status" aria-label="@AriaLabel">
+    @Label
+</span>
+
+@code {
+    [Parameter] public StatusBadgeType Status { get; set; }
+
+    private string Label => Status switch
+    {
+        StatusBadgeType.Ouvert => "Ouvert",
+        StatusBadgeType.Ferme => "Fermé",
+        StatusBadgeType.Disponible => "Disponible",
+        StatusBadgeType.Occupe => "Occupé",
+        StatusBadgeType.Urgence => "Urgence",
+        _ => "Statut"
+    };
+
+    private string CssClass => Status switch
+    {
+        StatusBadgeType.Ouvert => "ds-badge--open",
+        StatusBadgeType.Ferme => "ds-badge--closed",
+        StatusBadgeType.Disponible => "ds-badge--available",
+        StatusBadgeType.Occupe => "ds-badge--busy",
+        StatusBadgeType.Urgence => "ds-badge--emergency",
+        _ => "ds-badge--closed"
+    };
+
+    private string AriaLabel => $"Statut: {Label}";
+}

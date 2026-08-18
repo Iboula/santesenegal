@@ -1,0 +1,52 @@
+<article class="ds-card ds-facility-card" aria-labelledby="@TitleId">
+    <div class="ds-facility-card__content">
+        <header class="ds-facility-card__header">
+            <h3 id="@TitleId" class="ds-facility-card__title">@Title</h3>
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
+            {
+                <p class="ds-facility-card__subtitle">@Subtitle</p>
+            }
+        </header>
+
+        <div class="ds-facility-card__status" aria-label="Informations de disponibilité">
+            <StatusBadge Status="@Availability" />
+        </div>
+
+        <dl class="ds-facility-card__meta">
+            @if (!string.IsNullOrWhiteSpace(Distance))
+            {
+                <div class="ds-facility-card__meta-item">
+                    <dt>Distance</dt>
+                    <dd>@Distance</dd>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(WaitingTime))
+            {
+                <div class="ds-facility-card__meta-item">
+                    <dt>Temps d'attente</dt>
+                    <dd>@WaitingTime</dd>
+                </div>
+            }
+        </dl>
+    </div>
+
+    @if (Actions is not null)
+    {
+        <div class="ds-facility-card__actions" aria-label="Actions structure">
+            @Actions
+        </div>
+    }
+</article>
+
+@code {
+    private readonly string _id = $"facility-{Guid.NewGuid():N}";
+
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public StatusBadgeType Availability { get; set; } = StatusBadgeType.Disponible;
+    [Parameter] public string? Distance { get; set; }
+    [Parameter] public string? WaitingTime { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    private string TitleId => $"{_id}-title";
+}
