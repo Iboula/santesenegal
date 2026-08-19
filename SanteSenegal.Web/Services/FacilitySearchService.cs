@@ -107,9 +107,9 @@ public sealed class FacilitySearchService : IFacilitySearchService
         var current = structure.EstActif ? "ouvert" : "ferme";
         return Normalize(availability) switch
         {
-            "ouvert" or "disponible" => current == "ouvert",
+            "ouvert" => current == "ouvert",
             "ferme" => current == "ferme",
-            _ => true
+            _ => false
         };
     }
 
@@ -152,7 +152,9 @@ public sealed class FacilitySearchService : IFacilitySearchService
         {
             "radiologie" or "radiographie" => Set(TypeService.Radiographie, out type),
             "analyse" => Set(TypeService.Analyse, out type),
-            "consultation" or "pediatrie" or "maternite" or "pharmacie" => Set(TypeService.Consultation, out type),
+            "consultation" => Set(TypeService.Consultation, out type),
+            "echographie" => Set(TypeService.Echographie, out type),
+            "autre" => Set(TypeService.Autre, out type),
             _ => false
         };
     }

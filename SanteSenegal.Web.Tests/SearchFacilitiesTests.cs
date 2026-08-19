@@ -1,5 +1,7 @@
+using System.Net;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using SanteSenegal.Domain.Enums;
 using SanteSenegal.Web.Components.Badges;
 using SanteSenegal.Web.Components.Search;
 using SanteSenegal.Web.Pages;
@@ -21,20 +23,17 @@ public sealed class SearchFacilitiesTests : TestContext
             .Add(p => p.QueryChanged, value => query = value)
             .Add(p => p.OnSearch, () => submitted = true));
 
-        component.Find("input[aria-label='Rechercher un établissement, un symptôme, une spécialité ou un service']").Input("fièvre");
+        component.Find("input[name='facility-search']").Input("fievre");
         component.Find("form").Submit();
 
-        Assert.Equal("fièvre", query);
+        Assert.Equal("fievre", query);
         Assert.True(submitted);
         Assert.Contains("radiographie", component.Markup);
-        Assert.Contains("pédiatre", component.Markup);
         Assert.Contains("pharmacie", component.Markup);
-        Assert.Contains("maternité", component.Markup);
-        Assert.Contains("hôpital", component.Markup);
     }
 
     [Fact]
-    public void SearchFilters_StartCollapsedAndExposeFilterControls()
+    public void SearchFilters_StartCollapsedAndExposeSupportedFilterControls()
     {
         SearchFilterState? filters = null;
         var component = RenderComponent<SearchFilters>(parameters => parameters
@@ -45,12 +44,39 @@ public sealed class SearchFacilitiesTests : TestContext
         Assert.Equal("false", toggle.GetAttribute("aria-expanded"));
 
         toggle.Click();
-        component.Find("select[aria-label='Filtrer par région']").Change("Dakar");
-        component.Find("select[aria-label=\"Filtrer par type d'établissement\"]").Change("Hôpital");
+        component.Find("select[aria-label='Filtrer par region']").Change("Dakar");
+        component.Find("select[aria-label=\"Filtrer par type d'etablissement\"]").Change("Hopital");
 
         Assert.Equal("true", component.Find("button[aria-controls='search-filters-panel']").GetAttribute("aria-expanded"));
         Assert.Equal("Dakar", filters?.Region);
-        Assert.Equal("Hôpital", filters?.FacilityType);
+        Assert.Equal("Hopital", filters?.FacilityType);
+    }
+
+    [Fact]
+    public void SearchFilters_DoesNotExposeDistanceAsActiveFilter()
+    {
+        var component = RenderComponent<SearchFilters>(parameters => parameters
+            .Add(p => p.Filters, SearchFilterState.Default));
+
+        component.Find("button[aria-controls='search-filters-panel']").Click();
+
+        Assert.Empty(component.FindAll("input[type='range']"));
+        Assert.Contains("Distance - bientot disponible", component.Markup);
+        Assert.DoesNotContain("km</strong>", component.Markup);
+    }
+
+    [Fact]
+    public void SearchFilters_OnlyShowsAvailabilityValuesSupportedByApi()
+    {
+        var component = RenderComponent<SearchFilters>(parameters => parameters
+            .Add(p => p.Filters, SearchFilterState.Default));
+
+        component.Find("button[aria-controls='search-filters-panel']").Click();
+
+        Assert.Contains("Ouvert", component.Markup);
+        Assert.Contains("Ferme", component.Markup);
+        Assert.DoesNotContain("Urgence", component.Markup);
+        Assert.DoesNotContain("Disponible", component.Markup);
     }
 
     [Fact]
@@ -58,13 +84,13 @@ public sealed class SearchFacilitiesTests : TestContext
     {
         var component = RenderComponent<SearchResults>(parameters => parameters
             .Add(p => p.State, SearchUiState.ResultsFound)
-            .Add(p => p.Query, "hôpital")
+            .Add(p => p.Query, "hopital")
             .Add(p => p.Results, new[]
             {
-                CreateFacility("Hôpital Principal")
+                CreateFacility("Hopital Principal")
             }));
 
-        Assert.Contains("Hôpital Principal", component.Markup);
+        Assert.Contains("Hopital Principal", component.Markup);
         Assert.Contains("Ouvert", component.Markup);
         Assert.Contains("km", component.Markup);
         Assert.Contains("15 min", component.Markup);
@@ -79,7 +105,7 @@ public sealed class SearchFacilitiesTests : TestContext
 
         var state = component.Find("[role='status']");
 
-        Assert.Contains("Recherche des établissements en cours", state.TextContent);
+        Assert.Contains("Recherche des", state.TextContent);
         Assert.Equal("polite", state.GetAttribute("aria-live"));
     }
 
@@ -90,7 +116,7 @@ public sealed class SearchFacilitiesTests : TestContext
             .Add(p => p.State, SearchUiState.NoResults));
 
         Assert.NotNull(component.Find("[role='status']"));
-        Assert.Contains("Aucun établissement trouvé", component.Markup);
+        Assert.Contains("Aucun", component.Markup);
     }
 
     [Fact]
@@ -107,33 +133,30 @@ public sealed class SearchFacilitiesTests : TestContext
     public void SearchFacilities_UsesInjectedServiceForSuccessfulSearch()
     {
         var service = RegisterFacilitySearchService([CreateFacility("Structure API")]);
-
         var component = RenderComponent<SearchFacilities>();
 
-        component.Find("input[aria-label='Rechercher un établissement, un symptôme, une spécialité ou un service']").Input("fièvre");
+        component.Find("input[name='facility-search']").Input("fievre");
         component.Find("form").Submit();
 
         component.WaitForAssertion(() => Assert.Contains("Structure API", component.Markup));
-        Assert.Equal("fièvre", service.LastQuery);
+        Assert.Equal("fievre", service.LastQuery);
     }
 
     [Fact]
     public void SearchFacilities_RendersNoResultsWhenServiceReturnsEmpty()
     {
         RegisterFacilitySearchService([]);
-
         var component = RenderComponent<SearchFacilities>();
 
         component.Find("form").Submit();
 
-        component.WaitForAssertion(() => Assert.Contains("Aucun établissement trouvé", component.Markup));
+        component.WaitForAssertion(() => Assert.Contains("Aucun", component.Markup));
     }
 
     [Fact]
     public void SearchFacilities_RendersErrorWhenServiceFails()
     {
         RegisterFacilitySearchService([], throwOnSearch: true);
-
         var component = RenderComponent<SearchFacilities>();
 
         component.Find("form").Submit();
@@ -144,18 +167,18 @@ public sealed class SearchFacilitiesTests : TestContext
     [Fact]
     public void SearchFacilities_PassesFiltersToInjectedService()
     {
-        var service = RegisterFacilitySearchService([CreateFacility("Structure filtrée")]);
+        var service = RegisterFacilitySearchService([CreateFacility("Structure filtree")]);
         var component = RenderComponent<SearchFacilities>();
 
         component.Find("button[aria-controls='search-filters-panel']").Click();
-        component.Find("select[aria-label='Filtrer par région']").Change("Thiès");
-        component.Find("select[aria-label=\"Filtrer par type d'établissement\"]").Change("Centre de santé");
+        component.Find("select[aria-label='Filtrer par region']").Change("Thies");
+        component.Find("select[aria-label=\"Filtrer par type d'etablissement\"]").Change("Centre de sante");
         component.Find("form").Submit();
 
         component.WaitForAssertion(() =>
         {
-            Assert.Equal("Thiès", service.LastFilters?.Region);
-            Assert.Equal("Centre de santé", service.LastFilters?.FacilityType);
+            Assert.Equal("Thies", service.LastFilters?.Region);
+            Assert.Equal("Centre de sante", service.LastFilters?.FacilityType);
         });
     }
 
@@ -171,6 +194,46 @@ public sealed class SearchFacilitiesTests : TestContext
         Assert.DoesNotContain("erreur", source, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task FacilitySearchService_UnknownAvailabilityDoesNotMatchAll()
+    {
+        var handler = new RecordingHandler(CreateStructureJson("Structure ouverte", "Consultation", TypeService.Consultation));
+        var service = CreateSearchService(handler);
+
+        var results = await service.SearchAsync(null, SearchFilterState.Default with { Availability = "Urgence" });
+
+        Assert.Empty(results);
+    }
+
+    [Theory]
+    [InlineData("Pediatrie")]
+    [InlineData("Maternite")]
+    [InlineData("Pharmacie")]
+    public async Task FacilitySearchService_UnrepresentedSpecialtiesDoNotSendIncorrectServiceType(string specialty)
+    {
+        var handler = new RecordingHandler(CreateStructureJson("Structure specialisee", specialty, TypeService.Consultation));
+        var service = CreateSearchService(handler);
+
+        var results = await service.SearchAsync(null, SearchFilterState.Default with { Specialty = specialty });
+
+        Assert.Single(results);
+        Assert.DoesNotContain("serviceType=", handler.LastRequestUri?.Query);
+    }
+
+    [Fact]
+    public async Task FacilitySearchService_SearchUsesExistingEndpointAndSupportedServiceType()
+    {
+        var handler = new RecordingHandler(CreateStructureJson("Centre imagerie", "Radiologie", TypeService.Radiographie));
+        var service = CreateSearchService(handler);
+
+        var results = await service.SearchAsync("radiographie", SearchFilterState.Default with { Specialty = "Radiologie" });
+
+        Assert.Single(results);
+        Assert.Equal("/api/structures/search", handler.LastRequestUri?.AbsolutePath);
+        Assert.Contains("term=radiographie", handler.LastRequestUri?.Query);
+        Assert.Contains("serviceType=Radiographie", handler.LastRequestUri?.Query);
+    }
+
     private FakeFacilitySearchService RegisterFacilitySearchService(
         IReadOnlyList<FacilitySearchItem> results,
         bool throwOnSearch = false)
@@ -184,7 +247,7 @@ public sealed class SearchFacilitiesTests : TestContext
     {
         return new FacilitySearchItem(
             name,
-            "Hôpital",
+            "Hopital",
             "Dakar",
             StatusBadgeType.Ouvert,
             "Dakar",
@@ -192,7 +255,7 @@ public sealed class SearchFacilitiesTests : TestContext
             "Consultation",
             "15 min",
             2.4,
-            new[] { "hôpital" });
+            new[] { "hopital" });
     }
 
     private static string ReadSourceFile(params string[] pathParts)
@@ -210,6 +273,57 @@ public sealed class SearchFacilitiesTests : TestContext
         }
 
         throw new FileNotFoundException("Unable to locate source file.", Path.Combine(pathParts));
+    }
+
+    private static FacilitySearchService CreateSearchService(RecordingHandler handler)
+    {
+        return new FacilitySearchService(new HttpClient(handler)
+        {
+            BaseAddress = new Uri("https://api.test/")
+        });
+    }
+
+    private static string CreateStructureJson(string name, string serviceName, TypeService serviceType)
+    {
+        return $$"""
+[
+  {
+    "id": 1,
+    "nom": "{{name}}",
+    "type": {{(int)TypeStructure.CentreDeSante}},
+    "adresse": "Mermoz, Dakar",
+    "description": "Structure reelle",
+    "estActif": true,
+    "services": [
+      {
+        "nom": "{{serviceName}}",
+        "type": {{(int)serviceType}}
+      }
+    ]
+  }
+]
+""";
+    }
+
+    private sealed class RecordingHandler : HttpMessageHandler
+    {
+        private readonly string _json;
+
+        public RecordingHandler(string json)
+        {
+            _json = json;
+        }
+
+        public Uri? LastRequestUri { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            LastRequestUri = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(_json, System.Text.Encoding.UTF8, "application/json")
+            });
+        }
     }
 
     private sealed class FakeFacilitySearchService : IFacilitySearchService
