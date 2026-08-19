@@ -28,6 +28,13 @@ public sealed class SearchFacilitiesTests : TestContext
 
         Assert.Equal("fievre", query);
         Assert.True(submitted);
+        Assert.Contains("Recherche guidée et libre", component.Markup);
+        Assert.Contains("établissement adapté", component.Markup);
+        Assert.Contains("Médecin, symptôme, service, établissement", component.Markup);
+        Assert.Contains("fièvre", component.Markup);
+        Assert.Contains("pédiatre", component.Markup);
+        Assert.Contains("maternité", component.Markup);
+        Assert.Contains("hôpital", component.Markup);
         Assert.Contains("radiographie", component.Markup);
         Assert.Contains("pharmacie", component.Markup);
     }
@@ -44,12 +51,14 @@ public sealed class SearchFacilitiesTests : TestContext
         Assert.Equal("false", toggle.GetAttribute("aria-expanded"));
 
         toggle.Click();
-        component.Find("select[aria-label='Filtrer par region']").Change("Dakar");
-        component.Find("select[aria-label=\"Filtrer par type d'etablissement\"]").Change("Hopital");
+        component.Find("select[aria-label='Filtrer par région']").Change("Dakar");
+        component.Find("select[aria-label=\"Filtrer par type d'établissement\"]").Change("Hopital");
 
         Assert.Equal("true", component.Find("button[aria-controls='search-filters-panel']").GetAttribute("aria-expanded"));
         Assert.Equal("Dakar", filters?.Region);
         Assert.Equal("Hopital", filters?.FacilityType);
+        Assert.Contains("Région", component.Markup);
+        Assert.Contains("Type d'établissement", component.Markup);
     }
 
     [Fact]
@@ -61,7 +70,8 @@ public sealed class SearchFacilitiesTests : TestContext
         component.Find("button[aria-controls='search-filters-panel']").Click();
 
         Assert.Empty(component.FindAll("input[type='range']"));
-        Assert.Contains("Distance - bientot disponible", component.Markup);
+        Assert.Contains("Distance - bientôt disponible", component.Markup);
+        Assert.Contains("géolocalisation", component.Markup);
         Assert.DoesNotContain("km</strong>", component.Markup);
     }
 
@@ -74,7 +84,8 @@ public sealed class SearchFacilitiesTests : TestContext
         component.Find("button[aria-controls='search-filters-panel']").Click();
 
         Assert.Contains("Ouvert", component.Markup);
-        Assert.Contains("Ferme", component.Markup);
+        Assert.Contains("Fermé", component.Markup);
+        Assert.Contains("Disponibilité", component.Markup);
         Assert.DoesNotContain("Urgence", component.Markup);
         Assert.DoesNotContain("Disponible", component.Markup);
     }
@@ -87,10 +98,10 @@ public sealed class SearchFacilitiesTests : TestContext
             .Add(p => p.Query, "hopital")
             .Add(p => p.Results, new[]
             {
-                CreateFacility("Hopital Principal")
+                CreateFacility("Hôpital Principal")
             }));
 
-        Assert.Contains("Hopital Principal", component.Markup);
+        Assert.Contains("Hôpital Principal", component.Markup);
         Assert.Contains("Ouvert", component.Markup);
         Assert.Contains("km", component.Markup);
         Assert.Contains("15 min", component.Markup);
@@ -171,8 +182,8 @@ public sealed class SearchFacilitiesTests : TestContext
         var component = RenderComponent<SearchFacilities>();
 
         component.Find("button[aria-controls='search-filters-panel']").Click();
-        component.Find("select[aria-label='Filtrer par region']").Change("Thies");
-        component.Find("select[aria-label=\"Filtrer par type d'etablissement\"]").Change("Centre de sante");
+        component.Find("select[aria-label='Filtrer par région']").Change("Thies");
+        component.Find("select[aria-label=\"Filtrer par type d'établissement\"]").Change("Centre de sante");
         component.Find("form").Submit();
 
         component.WaitForAssertion(() =>
@@ -247,7 +258,7 @@ public sealed class SearchFacilitiesTests : TestContext
     {
         return new FacilitySearchItem(
             name,
-            "Hopital",
+            "Hôpital",
             "Dakar",
             StatusBadgeType.Ouvert,
             "Dakar",
@@ -255,7 +266,7 @@ public sealed class SearchFacilitiesTests : TestContext
             "Consultation",
             "15 min",
             2.4,
-            new[] { "hopital" });
+            new[] { "hôpital" });
     }
 
     private static string ReadSourceFile(params string[] pathParts)

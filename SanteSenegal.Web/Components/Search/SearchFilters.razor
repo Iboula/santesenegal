@@ -10,56 +10,56 @@
     <div id="search-filters-panel" class="search-filters__panel @( _expanded ? "search-filters__panel--expanded" : string.Empty )">
         <div class="search-filters__header">
             <h2 id="search-filters-title">Filtres</h2>
-            <p>Affinez la recherche avec les donnees disponibles actuellement.</p>
+            <p>Affinez la recherche avec les données disponibles actuellement.</p>
         </div>
 
-        <div class="search-filters__field search-filters__field--unavailable" aria-label="Distance bientot disponible">
+        <div class="search-filters__field search-filters__field--unavailable" aria-label="Distance bientôt disponible">
             <span>Distance</span>
-            <p>Distance - bientot disponible avec la geolocalisation.</p>
+            <p>Distance - bientôt disponible avec la géolocalisation.</p>
         </div>
 
         <label class="search-filters__field">
-            <span>Region</span>
-            <select value="@Filters.Region" aria-label="Filtrer par region" @onchange="UpdateRegion">
-                <option value="">Toutes les regions</option>
+            <span>Région</span>
+            <select value="@Filters.Region" aria-label="Filtrer par région" @onchange="UpdateRegion">
+                <option value="">Toutes les régions</option>
                 <option value="Dakar">Dakar</option>
-                <option value="Thies">Thies</option>
+                <option value="Thies">Thiès</option>
                 <option value="Saint-Louis">Saint-Louis</option>
             </select>
         </label>
 
         <label class="search-filters__field">
-            <span>Disponibilite</span>
-            <select value="@Filters.Availability" aria-label="Filtrer par disponibilite" @onchange="UpdateAvailability">
+            <span>Disponibilité</span>
+            <select value="@Filters.Availability" aria-label="Filtrer par disponibilité" @onchange="UpdateAvailability">
                 <option value="">Toutes</option>
                 <option value="Ouvert">Ouvert</option>
-                <option value="Ferme">Ferme</option>
+                <option value="Ferme">Fermé</option>
             </select>
         </label>
 
         <label class="search-filters__field">
-            <span>Type d'etablissement</span>
-            <select value="@Filters.FacilityType" aria-label="Filtrer par type d'etablissement" @onchange="UpdateFacilityType">
+            <span>Type d'établissement</span>
+            <select value="@Filters.FacilityType" aria-label="Filtrer par type d'établissement" @onchange="UpdateFacilityType">
                 <option value="">Tous les types</option>
-                <option value="Hopital">Hopital</option>
-                <option value="Centre de sante">Centre de sante</option>
+                <option value="Hopital">Hôpital</option>
+                <option value="Centre de sante">Centre de santé</option>
                 <option value="Clinique">Clinique</option>
             </select>
         </label>
 
         <label class="search-filters__field">
-            <span>Specialite</span>
-            <select value="@Filters.Specialty" aria-label="Filtrer par specialite" @onchange="UpdateSpecialty">
-                <option value="">Toutes les specialites</option>
-                <option value="Pediatrie">Pediatrie</option>
-                <option value="Maternite">Maternite</option>
+            <span>Spécialité</span>
+            <select value="@Filters.Specialty" aria-label="Filtrer par spécialité" @onchange="UpdateSpecialty">
+                <option value="">Toutes les spécialités</option>
+                <option value="Pediatrie">Pédiatrie</option>
+                <option value="Maternite">Maternité</option>
                 <option value="Radiologie">Radiologie</option>
                 <option value="Pharmacie">Pharmacie</option>
             </select>
         </label>
 
-        <SecondaryButton AriaLabel="Reinitialiser les filtres" OnClick="ResetFilters">
-            Reinitialiser
+        <SecondaryButton AriaLabel="Réinitialiser les filtres" OnClick="ResetFilters">
+            Réinitialiser
         </SecondaryButton>
     </div>
 </aside>
